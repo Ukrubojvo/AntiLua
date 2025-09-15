@@ -63,7 +63,7 @@ task.spawn(function()
 end)
 
 if game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId) then
-    loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId, true), "AntiLua")()
+    loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId), "AntiLua")()
     return
 else
     warn("[Anti Lua] 지원하지 않는 게임입니다.")
