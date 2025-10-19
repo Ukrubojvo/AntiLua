@@ -1,0 +1,865 @@
+--!strict
+
+print("\nEXECUTOR DETECTED : "..identifyexecutor())
+print((hookfunction and "✅ Support [HOOKFUNCTION]" or "❌ Unsupport [HOOKFUNCTION]"))
+print((hookmetamethod and "✅ Support [HOOKMETAMETHOD]" or "❌ Unsupport [HOOKMETAMETHOD]"))
+print((writefile and "✅ Support [WRITEFILE]" or "❌ Unsupport [WRITEFILE]"))
+print((readfile and "✅ Support [READFILE]" or "❌ Unsupport [READFILE]"))
+print((getconnections and "✅ Support [GETCONNECTIONS]" or "❌ Unsupport [HOOKFUNCTION]"))
+print((require and "✅ Support [REQUIRE]" or "❌ Unsupport [REQUIRE]"))
+print((request and "✅ Support [REQUEST]" or "❌ Unsupport [REQUEST]"))
+
+assert(isfolder and makefolder, "폴더를 생성할 수 없습니다")
+local _xpcall, _pcall, _task, _math = xpcall, pcall, task, math
+if not isfolder("AntiLua") then
+    makefolder("AntiLua")
+end
+
+if game.PlaceId ~= 7633631103 then return end
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+shared = shared
+if not shared.AntiLuaLoading then
+    shared.AntiLuaLoading = true
+else
+    return "Already Loaded"
+end
+
+local on_autoexec = false
+local on_desyncset = false
+if isfile("AntiLua/autoexec.bin") then
+    local _, autoexec = _pcall(readfile, "AntiLua/autoexec.bin")
+    if _ and autoexec == "0x00" then
+        on_autoexec = true
+        delfile("AntiLua/autoexec.bin")
+    elseif _ and autoexec == "0x02" then
+        on_desyncset = true
+        delfile("AntiLua/autoexec.bin")
+    end
+end
+if on_autoexec then shared.AntiLuaLoading = false return end
+
+local function missing(t, f, fallback)
+    if type(f) == t then return f end
+    return fallback
+end
+
+local run = function(func)
+    _xpcall(func, function(err)
+        shared.AntiLuaLoading = false
+        warn(err)
+    end)
+end
+
+getgenv().InterfaceName = "AntiLuaGUI"
+getgenv().SecureMode = true
+
+local Starlight = loadstring(game:HttpGet("https://raw.nebulasoftworks.xyz/starlight"))()  
+local NebulaIcons = loadstring(game:HttpGet("https://raw.nebulasoftworks.xyz/nebula-icon-library-loader"))()
+local cloneref = missing("function", cloneref, function(...) return ... end)
+local queueteleport = missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+local httprequest = missing("function", request or http_request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request))
+
+local Services = setmetatable({}, {
+    __index = function(self, name)
+        self[name] = cloneref(game:GetService(name))
+        return self[name]
+    end
+})
+
+local Lighting = Services.Lighting
+local RunService = Services.RunService
+local HttpService = Services.HttpService
+local UserInputService = Services.UserInputService
+local TweenService = Services.TweenService
+local TeleportService  = Services.TeleportService
+local SoundService = Services.SoundService
+local GroupService = Services.GroupService
+local MarketplaceService = Services.MarketplaceService
+local ReplicatedStorage = Services.ReplicatedStorage
+
+local Window
+local MainTabSection
+local players = Services.Players
+local lp = players.LocalPlayer
+local cam = workspace.CurrentCamera
+local executor = identifyexecutor()
+local isMobile = (UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled)
+
+local Connect = {
+    connections = {}
+}
+
+local AntiLuaGUI = {}
+local Draggable = {
+    items = {}
+}
+
+function Connect.connect(event, callback)
+    local conn = event:Connect(callback)
+    table.insert(Connect.connections, conn)
+    return conn
+end
+
+function Connect.disconnectAll()
+    for _, conn in ipairs(Connect.connections) do
+        if conn.Connected then
+            conn:Disconnect()
+        end
+    end
+    Connect.connections = {}
+end
+
+function Draggable.make(frame)
+    if not frame or Draggable.items[frame] then return end
+    Draggable.items[frame] = {dragging = false}
+    
+    Connect.connect(frame.InputBegan, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            local info = Draggable.items[frame]
+            info.dragging = true
+            info.drag_start = input.Position
+            info.start_pos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    info.dragging = false
+                end
+            end)
+        end
+    end)
+    
+    Connect.connect(frame.InputChanged, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            local info = Draggable.items[frame]
+            info.drag_input = input
+        end
+    end)
+    
+    Connect.connect(UserInputService.InputChanged, function(input)
+        local info = Draggable.items[frame]
+        if input == info.drag_input and info.dragging then
+            local delta = input.Position - info.drag_start
+            local new_x = info.start_pos.X.Offset + delta.X
+            local new_y = info.start_pos.Y.Offset + delta.Y
+            frame.Position = UDim2.new(info.start_pos.X.Scale, new_x, info.start_pos.Y.Scale, new_y)
+        end
+    end)
+end
+
+function Draggable.clear()
+    for frame, info in pairs(Draggable.items) do
+        info.dragging = false
+        info.drag_start = nil
+        info.start_pos = nil
+        info.drag_input = nil
+    end
+    Draggable.items = {}
+end
+
+run(function()
+    AntiLuaGUI["1"] = Instance.new("ScreenGui", gethui() or Services.CoreGui);
+    AntiLuaGUI["1"]["IgnoreGuiInset"] = true;
+    AntiLuaGUI["1"]["DisplayOrder"] = 214748367;
+    AntiLuaGUI["1"]["AutoLocalize"] = false;
+    AntiLuaGUI["1"]["ScreenInsets"] = Enum.ScreenInsets.DeviceSafeInsets;
+    AntiLuaGUI["1"]["Name"] = [[AntiLuaGUI]];
+    AntiLuaGUI["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
+    AntiLuaGUI["1"]["ResetOnSpawn"] = false;
+
+    if isMobile then
+        AntiLuaGUI["2"] = Instance.new("TextButton", AntiLuaGUI["1"]);
+        AntiLuaGUI["2"]["BorderSizePixel"] = 0;
+        AntiLuaGUI["2"]["TextSize"] = 24;
+        AntiLuaGUI["2"]["TextColor3"] = Color3.fromRGB(101, 101, 101);
+        AntiLuaGUI["2"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+        AntiLuaGUI["2"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+        AntiLuaGUI["2"]["AnchorPoint"] = Vector2.new(1, 0);
+        AntiLuaGUI["2"]["BackgroundTransparency"] = 0.2;
+        AntiLuaGUI["2"]["Active"] = true
+        AntiLuaGUI["2"]["Selectable"] = true
+        AntiLuaGUI["2"]["Size"] = UDim2.new(0, 117, 0, 42);
+        AntiLuaGUI["2"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+        AntiLuaGUI["2"]["Text"] = [[]];
+        AntiLuaGUI["2"]["Name"] = [[Toggle]];
+        AntiLuaGUI["2"]["Position"] = UDim2.new(1, 0, 0.64367, 0);
+
+        AntiLuaGUI["3"] = Instance.new("UIStroke", AntiLuaGUI["2"]);
+        AntiLuaGUI["3"]["Transparency"] = 0.5;
+        AntiLuaGUI["3"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
+        AntiLuaGUI["3"]["Thickness"] = 2;
+
+        AntiLuaGUI["4"] = Instance.new("UIGradient", AntiLuaGUI["2"]);
+        AntiLuaGUI["4"]["Rotation"] = 30;
+        AntiLuaGUI["4"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(25, 29, 21)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(175, 215, 208))};
+
+        AntiLuaGUI["5"] = Instance.new("UICorner", AntiLuaGUI["2"]);
+
+        AntiLuaGUI["6"] = Instance.new("TextLabel", AntiLuaGUI["2"]);
+        AntiLuaGUI["6"]["BorderSizePixel"] = 0;
+        AntiLuaGUI["6"]["TextSize"] = 20;
+        AntiLuaGUI["6"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+        AntiLuaGUI["6"]["FontFace"] = Font.new([[rbxassetid://12187365364]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+        AntiLuaGUI["6"]["TextColor3"] = Color3.fromRGB(232, 243, 240);
+        AntiLuaGUI["6"]["Interactable"] = false
+        AntiLuaGUI["6"]["BackgroundTransparency"] = 1;
+        AntiLuaGUI["6"]["Size"] = UDim2.new(1, 0, 1, 0);
+        AntiLuaGUI["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+        AntiLuaGUI["6"]["Text"] = [[Anti Lua]];
+    end
+
+    AntiLuaGUI["7"] = Instance.new("Frame", AntiLuaGUI["1"]);
+    AntiLuaGUI["7"]["BorderSizePixel"] = 0;
+    AntiLuaGUI["7"]["BackgroundColor3"] = Color3.fromRGB(35, 37, 44);
+    AntiLuaGUI["7"]["AnchorPoint"] = Vector2.new(0, 0.5);
+    AntiLuaGUI["7"]["Size"] = UDim2.new(0, 155, 0, 61);
+    AntiLuaGUI["7"]["Position"] = UDim2.new(0.127, 0, 0.5, 0);
+    AntiLuaGUI["7"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+    AntiLuaGUI["7"]["Active"] = true
+    AntiLuaGUI["7"]["Selectable"] = true
+    AntiLuaGUI["7"]["Visible"] = false
+    AntiLuaGUI["7"]["Name"] = [[Watermark]];
+
+    AntiLuaGUI["7_1"] = Instance.new("UIStroke", AntiLuaGUI["7"]);
+    AntiLuaGUI["7_1"]["Transparency"] = 0.5;
+    AntiLuaGUI["7_1"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
+    AntiLuaGUI["7_1"]["Thickness"] = 2;
+
+    AntiLuaGUI["8"] = Instance.new("UICorner", AntiLuaGUI["7"]);
+
+    AntiLuaGUI["9"] = Instance.new("Frame", AntiLuaGUI["7"]);
+    AntiLuaGUI["9"]["BorderSizePixel"] = 0;
+    AntiLuaGUI["9"]["BackgroundColor3"] = Color3.fromRGB(58, 63, 71);
+    AntiLuaGUI["9"]["Size"] = UDim2.new(0, 155, 0, 2);
+    AntiLuaGUI["9"]["Position"] = UDim2.new(0, 0, 0.39394, 0);
+    AntiLuaGUI["9"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+
+    AntiLuaGUI["a"] = Instance.new("TextLabel", AntiLuaGUI["7"]);
+    AntiLuaGUI["a"]["TextWrapped"] = true;
+    AntiLuaGUI["a"]["ZIndex"] = 5;
+    AntiLuaGUI["a"]["BorderSizePixel"] = 0;
+    AntiLuaGUI["a"]["TextSize"] = 14;
+    AntiLuaGUI["a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+    AntiLuaGUI["a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+    AntiLuaGUI["a"]["FontFace"] = Font.new([[rbxassetid://12187365364]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+    AntiLuaGUI["a"]["TextColor3"] = Color3.fromRGB(246, 240, 231);
+    AntiLuaGUI["a"]["BackgroundTransparency"] = 1;
+    AntiLuaGUI["a"]["Size"] = UDim2.new(0, 139, 0, 24);
+    AntiLuaGUI["a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+    AntiLuaGUI["a"]["Text"] = [[AntiLua]];
+    AntiLuaGUI["a"]["Position"] = UDim2.new(0.0479, 0, 0, 0);
+
+    AntiLuaGUI["b"] = Instance.new("TextLabel", AntiLuaGUI["7"]);
+    AntiLuaGUI["b"]["ZIndex"] = 5;
+    AntiLuaGUI["b"]["BorderSizePixel"] = 0;
+    AntiLuaGUI["b"]["TextSize"] = 14;
+    AntiLuaGUI["b"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+    AntiLuaGUI["b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+    AntiLuaGUI["b"]["FontFace"] = Font.new([[rbxassetid://12187365364]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+    AntiLuaGUI["b"]["TextColor3"] = Color3.fromRGB(255, 254, 247);
+    AntiLuaGUI["b"]["BackgroundTransparency"] = 1;
+    AntiLuaGUI["b"]["Size"] = UDim2.new(0, 66, 0, 35);
+    AntiLuaGUI["b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+    AntiLuaGUI["b"]["Text"] = [[FPS: 999]];
+    AntiLuaGUI["b"]["Name"] = [[FPS]];
+    AntiLuaGUI["b"]["Position"] = UDim2.new(0.0479, 0, 0.42424, 0);
+
+    AntiLuaGUI["c"] = Instance.new("TextLabel", AntiLuaGUI["7"]);
+    AntiLuaGUI["c"]["ZIndex"] = 5;
+    AntiLuaGUI["c"]["BorderSizePixel"] = 0;
+    AntiLuaGUI["c"]["TextSize"] = 14;
+    AntiLuaGUI["c"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+    AntiLuaGUI["c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+    AntiLuaGUI["c"]["FontFace"] = Font.new([[rbxassetid://12187365364]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+    AntiLuaGUI["c"]["TextColor3"] = Color3.fromRGB(255, 254, 247);
+    AntiLuaGUI["c"]["BackgroundTransparency"] = 1;
+    AntiLuaGUI["c"]["Size"] = UDim2.new(0, 65, 0, 35);
+    AntiLuaGUI["c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+    AntiLuaGUI["c"]["Text"] = [[PING: 1ms]];
+    AntiLuaGUI["c"]["Name"] = [[Ping]];
+    AntiLuaGUI["c"]["Position"] = UDim2.new(0.52096, 0, 0.42424, 0);
+
+    Draggable.make(AntiLuaGUI["2"])
+    Draggable.make(AntiLuaGUI["7"])
+
+    local cooldown = false
+    if isMobile then
+        Connect.connect(AntiLuaGUI["2"].MouseButton1Up, function()
+            if not cooldown then
+                cooldown = true
+                Starlight.Minimized = not Starlight.Minimized
+                _task.wait(0.5)
+                cooldown = false
+            end
+        end)
+    end
+
+    AntiLuaGUI["l"] = tick()
+    AntiLuaGUI["fps"] = 0
+    AntiLuaGUI["FPS"] = RunService.PreRender:Connect(function()
+        local s = tick()
+        local d = s - AntiLuaGUI["l"]
+        AntiLuaGUI["l"] = s
+        if d > 0 then
+            AntiLuaGUI["fps"] = 1/ d
+        end
+        AntiLuaGUI["c"].Text = tostring(_math.floor(lp:GetNetworkPing()*1000)).."ms"
+        AntiLuaGUI["b"].Text = "FPS: "..tostring(_math.floor(AntiLuaGUI["fps"]))
+    end)
+end)
+
+run(function()
+    Starlight.WindowKeybind = "RightControl"
+    Window = Starlight:CreateWindow({
+        Name = "AntiLua",
+        Subtitle = "v1.0.0",
+        Icon = 84785726693204,
+
+        LoadingEnabled = true,
+        LoadingSettings = {
+            Title = "The mimic Halloween Trails",
+            Subtitle = "Powered by .antilua.",
+            Logo = 84785726693204,
+        },
+
+        FileSettings = {
+            ConfigFolder = "AntiLua"
+        },
+    })
+
+    Starlight:OnDestroy(function()
+        shared.AntiLuaLoading = false
+        shared.AntiLuaLoader = false
+        if AntiLuaGUI then AntiLuaGUI["1"]:Destroy() end
+        Connect.disconnectAll()
+    end)
+end)
+
+run(function()
+    MainTabSection = Window:CreateTabSection("Home")
+    local TeleportRoom = MainTabSection:CreateTab({
+        Name = "Main",
+        Icon = NebulaIcons:GetIcon('view_in_ar', 'Material'),
+        Columns = 2,
+    }, "INDEX")
+
+    local Groupbox = TeleportRoom:CreateGroupbox({
+        Name = "Section",
+        Column = 1,
+    }, "INDEX")
+
+    local Teleporttopart3 = Groupbox:CreateButton({
+        Name = "Teleport To Part 3 (SinglePlayer)",
+        Icon = NebulaIcons:GetIcon('user', 'Lucide'),
+        Style = 1,
+        Callback = function()
+            local targetCFrame = CFrame.new(-1777.65417, 9.71738243, -4290.00049, 0.0666244403, 0, -0.997778118, 0, 1, 0, 0.997778118, 0, 0.0666244403)
+            if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.CFrame = targetCFrame
+            end
+        end,
+    }, "INDEX")
+
+    local function checkProximityPrompt()
+        local rootPart = lp.Character:WaitForChild("HumanoidRootPart")
+        local rootPos = rootPart.Position
+
+        for _, part in pairs(workspace:GetDescendants()) do
+            if part:IsA("MeshPart") and (part.Position - rootPos).Magnitude <= 3 then
+                if part.Name == "Candy" and part:FindFirstChildWhichIsA("ProximityPrompt") then
+                    return part:FindFirstChildWhichIsA("ProximityPrompt")
+                end
+            end
+        end
+        return false
+    end
+
+    local function checkProximityPrompt_2()
+        local rootPart = lp.Character:WaitForChild("HumanoidRootPart")
+        local rootPos = rootPart.Position
+
+        for _, part in pairs(workspace:GetDescendants()) do
+            if (part.Position - rootPos).Magnitude <= 5 then
+                if part:FindFirstChildWhichIsA("ProximityPrompt") then
+                    return part:FindFirstChildWhichIsA("ProximityPrompt")
+                end
+            end
+        end
+        return false
+    end
+
+    local autograbitems = Groupbox:CreateButton({
+        Name = "Auto Grab PuzzleItems",
+        Icon = NebulaIcons:GetIcon('user', 'Lucide'),
+        Style = 1,
+        Callback = function()
+            local folder = workspace:FindFirstChild("GameInfo")
+            if not folder then return end
+            local items = folder:FindFirstChild("PuzzleItems")
+            if not items then return end
+            if not lp or not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+            local last = lp.Character.HumanoidRootPart.CFrame
+            for _, obj in ipairs(items:GetChildren()) do
+                if obj:IsA("Part") and obj.Name == "GrabItem" then
+                    local prompt = obj:FindFirstChildOfClass("ProximityPrompt") or obj:FindFirstChildWhichIsA("ProximityPrompt", true)
+                    if prompt then
+                        lp.Character.HumanoidRootPart.CFrame = obj.CFrame
+                        task.wait(0.5)
+                        fireproximityprompt(prompt)
+                        task.wait(1)
+                    end
+                end
+            end
+            lp.Character.HumanoidRootPart.CFrame = CFrame.new(-354.545868, -19.969244, -168.126236, -0.999559879, 1.15820402e-08, 0.0296654869, 1.16841834e-08, 1, 3.26982064e-09, -0.0296654869, 3.61499852e-09, -0.999559879)
+            local prompt = checkProximityPrompt_2()
+            if not prompt then return end
+            task.wait(0.5)
+            fireproximityprompt(prompt)
+            fireproximityprompt(prompt)
+            fireproximityprompt(prompt)
+        end,
+    }, "INDEX")
+
+    local autocollectcandys = Groupbox:CreateButton({
+        Name = "Auto Collect Candys",
+        Icon = NebulaIcons:GetIcon('user', 'Lucide'),
+        Style = 1,
+        Callback = function()
+            local candyFolder = workspace:FindFirstChild("Candy")
+            if not candyFolder then return end
+            if not lp or not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+            local root = lp.Character.HumanoidRootPart
+            local last = root.CFrame
+            local candys = {}
+
+            for _, obj in ipairs(candyFolder:GetChildren()) do
+                if obj:IsA("MeshPart") and obj.Name == "Candy" then
+                    table.insert(candys, obj)
+                end
+            end
+
+            table.sort(candys, function(a, b)
+                return (a.Position - root.Position).Magnitude < (b.Position - root.Position).Magnitude
+            end)
+
+            for _, obj in ipairs(candys) do
+                if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then break end
+                lp.Character.HumanoidRootPart.CFrame = obj.CFrame
+                local prompt = checkProximityPrompt()
+                if not prompt then continue end
+                task.wait(0.3)
+                fireproximityprompt(prompt)
+            end
+            task.wait(0.5)
+            root.CFrame = last
+        end,
+    }, "INDEX")
+end)
+
+run(function()
+    local EspTab = MainTabSection:CreateTab({
+        Name = "ESP",
+        Icon = NebulaIcons:GetIcon('view_in_ar', 'Material'),
+        Columns = 2,
+    }, "INDEX")
+
+    local Groupbox = EspTab:CreateGroupbox({
+        Name = "Section",
+        Column = 1,
+    }, "INDEX")
+
+    local PlayerHighlights = {}
+    local espEnabled = false
+
+    local function removeESP(plr)
+        if plr.Character then
+            local h = plr.Character:FindFirstChild("antiluaHighlight")
+            local b = plr.Character:FindFirstChild("antiluaicon")
+            if h then h:Destroy() end
+            if b then b:Destroy() end
+        end
+    end
+
+    local function createESP(plr)
+        if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
+        if plr.Character:FindFirstChild("antiluaHighlight") or plr.Character:FindFirstChild("antiluaicon") then return end
+
+        local h = Instance.new("Highlight")
+        h.Name = "antiluaHighlight"
+        h.FillColor = Color3.fromRGB(144, 238, 144)
+        h.OutlineColor = Color3.fromRGB(255, 255, 255)
+        h.Parent = plr.Character
+
+        local b = Instance.new("BillboardGui")
+        b.Name = "antiluaicon"
+        b.AlwaysOnTop = true
+        b.Adornee = plr.Character:FindFirstChild("Head")
+        b.Size = UDim2.new(0, 50, 0, 50)
+        b.MaxDistance = math.huge
+        b.Parent = plr.Character
+
+        local nameLabel = Instance.new("TextLabel")
+        nameLabel.Name = "NameLabel"
+        nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Text = plr.Name
+        nameLabel.TextColor3 = Color3.fromRGB(144, 238, 144)
+        nameLabel.TextSize = 13
+        nameLabel.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        nameLabel.Parent = b
+
+        local distLabel = Instance.new("TextLabel")
+        distLabel.Name = "DistLabel"
+        distLabel.Size = UDim2.new(1, 0, 0.5, 0)
+        distLabel.Position = UDim2.new(0, 0, 0.5, 0)
+        distLabel.BackgroundTransparency = 1
+        distLabel.TextColor3 = Color3.fromRGB(144, 238, 144)
+        distLabel.TextSize = 13
+        distLabel.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        distLabel.Parent = b
+
+        task.spawn(function()
+            while espEnabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") do
+                local root = plr.Character.HumanoidRootPart
+                if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                    local dist = (lp.Character.HumanoidRootPart.Position - root.Position).Magnitude
+                    distLabel.Text = string.format("%.1f studs", dist)
+                end
+                task.wait(0.1)
+            end
+            removeESP(plr)
+        end)
+    end
+
+    local HighlightPlayer = Groupbox:CreateToggle({
+        Name = "ESP Player",
+        CurrentValue = false,
+        Style = 2,
+        Callback = function(state)
+            espEnabled = state
+            if state then
+                for _, plr in ipairs(players:GetPlayers()) do
+                    if plr ~= lp then
+                        createESP(plr)
+                    end
+                end
+                PlayerHighlights.playerAddedConn = players.PlayerAdded:Connect(function(plr)
+                    plr.CharacterAdded:Connect(function()
+                        task.wait(1)
+                        if espEnabled then createESP(plr) end
+                    end)
+                end)
+            else
+                if PlayerHighlights.playerAddedConn then
+                    PlayerHighlights.playerAddedConn:Disconnect()
+                    PlayerHighlights.playerAddedConn = nil
+                end
+                for _, plr in ipairs(players:GetPlayers()) do
+                    removeESP(plr)
+                end
+            end
+        end,
+    }, "INDEX")
+
+    local monsterESPEnabled = false
+    local monsterConnections = {}
+
+    local function removeMonsterESP(ai)
+        if ai:FindFirstChild("antiluaHighlight") then ai.antiluaHighlight:Destroy() end
+        if ai:FindFirstChild("antiluaicon") then ai.antiluaicon:Destroy() end
+    end
+
+    local function createMonsterESP(ai)
+        if ai:FindFirstChild("antiluaHighlight") or ai:FindFirstChild("antiluaicon") then return end
+
+        local h = Instance.new("Highlight")
+        h.Name = "antiluaHighlight"
+        h.FillColor = Color3.fromRGB(255, 102, 102)
+        h.OutlineColor = Color3.fromRGB(255, 255, 255)
+        h.Parent = ai
+
+        local b = Instance.new("BillboardGui")
+        b.Name = "antiluaicon"
+        b.AlwaysOnTop = true
+        b.Adornee = ai:FindFirstChild("Eyes")
+        b.Size = UDim2.new(0, 30, 0, 30)
+        b.MaxDistance = math.huge
+        b.Parent = ai
+
+        local img = Instance.new("ImageLabel")
+        img.Name = "IconImage"
+        img.Size = UDim2.new(1, 0, 1, 0)
+        img.Position = UDim2.new(0, 0, 0, 0)
+        img.BackgroundTransparency = 1
+        img.Image = "rbxassetid://88229448947616"
+        img.Parent = b
+
+        local text = Instance.new("TextLabel")
+        text.Name = "AIName"
+        text.Position = UDim2.new(0, 0, 0, 20)
+        text.Size = UDim2.new(1, 0, 1, 0)
+        text.BackgroundTransparency = 1
+        text.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        text.TextColor3 = Color3.fromRGB(255, 102, 102)
+        text.Text = "AI"
+        text.TextSize = 13
+        text.Parent = b
+    end
+
+    local MonsterESP = Groupbox:CreateToggle({
+        Name = "ESP Monster",
+        CurrentValue = false,
+        Style = 2,
+        Callback = function(state)
+            monsterESPEnabled = state
+            local aiFolder = workspace:FindFirstChild("GameAI")
+            if not aiFolder then return end
+
+            if state then
+                for _, obj in ipairs(aiFolder:GetChildren()) do
+                    if obj:IsA("Model") and obj.Name == "AI" then
+                        createMonsterESP(obj)
+                    end
+                end
+                monsterConnections.addConn = aiFolder.ChildAdded:Connect(function(obj)
+                    if monsterESPEnabled and obj:IsA("Model") and obj.Name == "AI" then
+                        createMonsterESP(obj)
+                    end
+                end)
+            else
+                if monsterConnections.addConn then
+                    monsterConnections.addConn:Disconnect()
+                    monsterConnections.addConn = nil
+                end
+                for _, obj in ipairs(aiFolder:GetChildren()) do
+                    if obj:IsA("Model") and obj.Name == "AI" then
+                        removeMonsterESP(obj)
+                    end
+                end
+            end
+        end,
+    }, "INDEX")
+
+    local candyESPEnabled = false
+    local candyConnections = {}
+
+    local function removeCandyESP(candy)
+        if candy:FindFirstChild("antiluaHighlight") then candy.antiluaHighlight:Destroy() end
+        if candy:FindFirstChild("antiluaicon") then candy.antiluaicon:Destroy() end
+    end
+
+    local function createCandyESP(candy)
+        if not candy:IsA("MeshPart") or candy.Name ~= "Candy" then return end
+        if candy:FindFirstChild("antiluaHighlight") or candy:FindFirstChild("antiluaicon") then return end
+
+        local h = Instance.new("Highlight")
+        h.Name = "antiluaHighlight"
+        h.FillColor = Color3.fromRGB(221, 115, 252)
+        h.OutlineColor = Color3.fromRGB(255, 255, 255)
+        h.Parent = candy
+
+        local b = Instance.new("BillboardGui")
+        b.Name = "antiluaicon"
+        b.AlwaysOnTop = true
+        b.Size = UDim2.new(0, 30, 0, 30)
+        b.Parent = candy
+
+        local img = Instance.new("ImageLabel")
+        img.Name = "IconImage"
+        img.Size = UDim2.new(1, 0, 1, 0)
+        img.Position = UDim2.new(0, 0, 0, 0)
+        img.BackgroundTransparency = 1
+        img.Image = "rbxassetid://116802131222258"
+        img.Parent = b
+
+        local text = Instance.new("TextLabel")
+        text.Name = "CandyName"
+        text.Size = UDim2.new(1, 0, 1, 0)
+        text.BackgroundTransparency = 1
+        text.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        text.TextColor3 = Color3.fromRGB(221, 115, 252)
+        text.Text = "Candy"
+        text.TextSize = 13
+        text.Parent = b
+    end
+
+    local CandyESP = Groupbox:CreateToggle({
+        Name = "ESP Candys",
+        CurrentValue = false,
+        Style = 2,
+        Callback = function(state)
+            candyESPEnabled = state
+            local candyFolder = workspace:FindFirstChild("Candy")
+            if not candyFolder then return end
+
+            if state then
+                for _, obj in ipairs(candyFolder:GetChildren()) do
+                    if obj:IsA("MeshPart") and obj.Name == "Candy" then
+                        createCandyESP(obj)
+                    end
+                end
+                candyConnections.addConn = candyFolder.ChildAdded:Connect(function(obj)
+                    if candyESPEnabled and obj:IsA("MeshPart") and obj.Name == "Candy" then
+                        createCandyESP(obj)
+                    end
+                end)
+            else
+                if candyConnections.addConn then
+                    candyConnections.addConn:Disconnect()
+                    candyConnections.addConn = nil
+                end
+                for _, obj in ipairs(candyFolder:GetChildren()) do
+                    if obj:IsA("MeshPart") and obj.Name == "Candy" then
+                        removeCandyESP(obj)
+                    end
+                end
+            end
+        end,
+    }, "INDEX")
+end)
+
+run(function()
+    local PlayerTab = MainTabSection:CreateTab({
+        Name = "LocalPlayer",
+        Icon = NebulaIcons:GetIcon('view_in_ar', 'Material'),
+        Columns = 2,
+    }, "INDEX")
+
+    local Groupbox = PlayerTab:CreateGroupbox({
+        Name = "Section",
+        Column = 1,
+    }, "INDEX")
+
+    local player = lp
+    --fly
+    local CONTROL = {F = 0, B = 0, L = 0, R = 0, U = 0, D = 0}
+    local flyConnection, inputBeganConnection, inputEndedConnection
+    local SPEED = 50
+    --noclip
+    local noclipConnection
+    local originalCollisions = {}
+    --speed
+    local SpeedBoostValue = 1
+    local SpeedBoostStatus = false
+
+    local SpeedSlider = Groupbox:CreateSlider({
+        Name = "Speed Boost Value",
+        Icon = NebulaIcons:GetIcon('chart-no-axes-column-increasing', 'Lucide'),
+        Range = {0, 100},
+        Increment = 1,
+        CurrentValue = 1,
+        Callback = function(Value)
+            SpeedBoostValue = Value
+        end,
+    }, "INDEX")
+
+    local SpeedBoost = Groupbox:CreateToggle({
+        Name = "Speed Boost",
+        CurrentValue = false,
+        Style = 2,
+        Callback = function(state)
+            SpeedBoostStatus = state
+            if state then
+                _task.spawn(function()
+                    while SpeedBoostStatus do
+                        local char = lp.Character or lp.CharacterAdded:Wait()
+                        local humanoid = char:WaitForChild("Humanoid")
+                        if humanoid and humanoid.Parent then
+                            local delta = RunService.Heartbeat:Wait()
+                            if humanoid.MoveDirection.Magnitude > 0 then
+                                char:TranslateBy(humanoid.MoveDirection * SpeedBoostValue * delta * 10)
+                            end
+                        end
+                        _task.wait()
+                    end
+                end)
+            end
+        end,
+    }, "INDEX")
+
+    local Fly = Groupbox:CreateToggle({
+        Name = "Fly",
+        CurrentValue = false,
+        Style = 2,
+        Callback = function(state)
+            local character = player.Character or player.CharacterAdded:Wait()
+            local root = character:WaitForChild("HumanoidRootPart")
+            if state then
+                inputBeganConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+                    if gameProcessed then return end
+                    if input.KeyCode == Enum.KeyCode.W then CONTROL.F = 1
+                    elseif input.KeyCode == Enum.KeyCode.S then CONTROL.B = -1
+                    elseif input.KeyCode == Enum.KeyCode.A then CONTROL.L = -1
+                    elseif input.KeyCode == Enum.KeyCode.D then CONTROL.R = 1
+                    elseif input.KeyCode == Enum.KeyCode.Space then CONTROL.U = 1
+                    elseif input.KeyCode == Enum.KeyCode.LeftShift then CONTROL.D = -1
+                    end
+                end)
+
+                inputEndedConnection = UserInputService.InputEnded:Connect(function(input)
+                    if input.KeyCode == Enum.KeyCode.W then CONTROL.F = 0
+                    elseif input.KeyCode == Enum.KeyCode.S then CONTROL.B = 0
+                    elseif input.KeyCode == Enum.KeyCode.A then CONTROL.L = 0
+                    elseif input.KeyCode == Enum.KeyCode.D then CONTROL.R = 0
+                    elseif input.KeyCode == Enum.KeyCode.Space then CONTROL.U = 0
+                    elseif input.KeyCode == Enum.KeyCode.LeftShift then CONTROL.D = 0
+                    end
+                end)
+
+                flyConnection = RunService.RenderStepped:Connect(function(dt)
+                    if not character or not root then return end
+                    local cf = cam.CFrame
+                    local move = Vector3.new(0, 0, 0)
+                    move = move + cf.LookVector * (CONTROL.F + CONTROL.B)
+                    move = move + cf.RightVector * (CONTROL.R + CONTROL.L)
+                    move = move + cf.UpVector * (CONTROL.U + CONTROL.D)
+
+                    if move.Magnitude > 0 then
+                        local moveDir = move.Unit * SPEED * dt
+                        root.CFrame = CFrame.new(root.Position + moveDir, root.Position + moveDir + cf.LookVector)
+                    end
+
+                    root.AssemblyLinearVelocity = Vector3.zero
+                end)
+            else
+                if flyConnection then flyConnection:Disconnect() end
+                if inputBeganConnection then inputBeganConnection:Disconnect() end
+                if inputEndedConnection then inputEndedConnection:Disconnect() end
+                CONTROL = {F = 0, B = 0, L = 0, R = 0, U = 0, D = 0}
+            end
+        end,
+    }, "INDEX")
+
+    local Noclip = Groupbox:CreateToggle({
+        Name = "Noclip",
+        CurrentValue = false,
+        Style = 2,
+        Callback = function(state)
+            local character = player.Character or player.CharacterAdded:Wait()
+            local root = character:WaitForChild("HumanoidRootPart")
+            if state then
+                local function NoclipLoop()
+                    if state and player.Character then
+                        for _, child in pairs(player.Character:GetDescendants()) do
+                            if child:IsA("BasePart") and child.CanCollide then
+                                originalCollisions[child] = child.CanCollide
+                                child.CanCollide = false
+                            end
+                        end
+                    end
+                end
+                NoclipLoop()
+                noclipConnection = RunService.Stepped:Connect(NoclipLoop)
+            else
+                if noclipConnection then
+                    noclipConnection:Disconnect()
+                end
+                for part, canCollide in pairs(originalCollisions) do
+                    if part.Parent then
+                        part.CanCollide = canCollide
+                    end
+                end
+                originalCollisions = {}
+            end
+        end,
+    }, "INDEX")
+end)
