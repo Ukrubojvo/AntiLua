@@ -1,4 +1,4 @@
-# 지원 게임 🇰🇷
+# AntiLua HUB 🇰🇷
 [English version →](./README.en.md)
 
 ---
