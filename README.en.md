@@ -1,4 +1,4 @@
-# Support game 🇺🇸
+# AntiLua HUB 🇺🇸
 [Korean version →](./README.md)
 
 ---
