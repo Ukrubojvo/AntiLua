@@ -8,6 +8,7 @@
 - Speed Per RNG : 116061507956332
 - The Mimic Book 2 Chapter 1
 - The Mimic Halloween Trail
+- Nearly all jump map games (those with stages)
 
 ## Code
 ```lua
