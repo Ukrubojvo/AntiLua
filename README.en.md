@@ -6,6 +6,7 @@
 # Support game
 - Korean Murder : 5720801512
 - Speed Per RNG : 116061507956332
+- Visual Pianos : 1953956112
 - The Mimic Book 2 Chapter 1
 - The Mimic Halloween Trail
 - Nearly all Obby games (those with stages)
