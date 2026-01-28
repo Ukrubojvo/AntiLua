@@ -370,7 +370,10 @@ run(function()
     _task.spawn(function()
         if game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId) ~= "" then
             _xpcall(function()
-                loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId), "AntiLua")()
+				local GitRequests = loadstring(game:HttpGet("https://raw.githubusercontent.com/itchino/Roblox-GitRequests/refs/heads/main/GitRequests.lua"))()
+                local Repo = GitRequests.Repo("Ukrubojvo", "AntiLua")
+				local content = repo:getFileContent("games/"..game.PlaceId, "run")
+                loadstring(content)()
             end, function(err)
                 shared.AntiLuaLoading = false
                 shared.AntiLuaLoader = false
