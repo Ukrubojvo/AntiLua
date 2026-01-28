@@ -371,10 +371,11 @@ run(function()
         if game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId) ~= "" then
             _xpcall(function()
                 loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId), "AntiLua")()
-            end, function()
+            end, function(err)
                 shared.AntiLuaLoading = false
                 shared.AntiLuaLoader = false
                 warn("[AntiLua] An error has occurred!\n- Game: "..game.PlaceId)
+                warn(err)
             end)
         else
             local allowObbyGames = {
@@ -429,18 +430,20 @@ run(function()
             if obbyallowed then
                 _xpcall(function()
                     loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/ObbyAuto.lua"), "AntiLua")()
-                end, function()
+                end, function(err)
                     shared.AntiLuaLoading = false
                     shared.AntiLuaLoader = false
                     warn("[AntiLua] An error has occurred!\n- Game:", GameName, placeId)
+                    warn(err)
                 end)
             else
                 _xpcall(function()
                     loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/Universal.lua"), "AntiLua")()
-                end, function()
+                end, function(err)
                     shared.AntiLuaLoading = false
                     shared.AntiLuaLoader = false
                     warn("[AntiLua] An error has occurred!\n- Game:", GameName, placeId)
+                    warn(err)
                 end)
             end
         end
