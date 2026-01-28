@@ -372,7 +372,7 @@ run(function()
             _xpcall(function()
 				local GitRequests = loadstring(game:HttpGet("https://raw.githubusercontent.com/itchino/Roblox-GitRequests/refs/heads/main/GitRequests.lua"))()
                 local Repo = GitRequests.Repo("Ukrubojvo", "AntiLua")
-				local content = repo:getFileContent("games/"..game.PlaceId, "run")
+				local content = Repo:getFileContent("games/"..game.PlaceId, "run")
                 loadstring(content)()
             end, function(err)
                 shared.AntiLuaLoading = false
