@@ -167,49 +167,54 @@ run(function()
     LoadingUI["2"] = Instance.new("Frame", LoadingUI["1"])
     LoadingUI["2"]["BorderSizePixel"] = 0
     LoadingUI["2"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0)
-    LoadingUI["2"]["BackgroundTransparency"] = 0.3
+    LoadingUI["2"]["BackgroundTransparency"] = 0.4
     LoadingUI["2"]["Size"] = UDim2.new(1, 0, 1, 0)
     LoadingUI["2"]["Name"] = "BlurBG"
     
     LoadingUI["3"] = Instance.new("Frame", LoadingUI["1"])
     LoadingUI["3"]["BorderSizePixel"] = 0
-    LoadingUI["3"]["BackgroundColor3"] = Color3.fromRGB(20, 20, 25)
+    LoadingUI["3"]["BackgroundColor3"] = Color3.fromRGB(18, 18, 22)
     LoadingUI["3"]["AnchorPoint"] = Vector2.new(0.5, 0.5)
-    LoadingUI["3"]["Size"] = UDim2.new(0, 420, 0, 260)
+    LoadingUI["3"]["Size"] = UDim2.new(0, 360, 0, 200)
     LoadingUI["3"]["Position"] = UDim2.new(0.5, 0, 0.5, 0)
     LoadingUI["3"]["Name"] = "MainContainer"
     
     LoadingUI["4"] = Instance.new("UICorner", LoadingUI["3"])
-    LoadingUI["4"]["CornerRadius"] = UDim.new(0, 12)
+    LoadingUI["4"]["CornerRadius"] = UDim.new(0, 16)
+    
+    LoadingUI["border"] = Instance.new("UIStroke", LoadingUI["3"])
+    LoadingUI["border"]["Color"] = Color3.fromRGB(40, 40, 48)
+    LoadingUI["border"]["Thickness"] = 1
+    LoadingUI["border"]["Transparency"] = 0.5
     
     LoadingUI["5"] = Instance.new("TextLabel", LoadingUI["3"])
     LoadingUI["5"]["BorderSizePixel"] = 0
-    LoadingUI["5"]["TextSize"] = 38
+    LoadingUI["5"]["TextSize"] = 28
     LoadingUI["5"]["BackgroundTransparency"] = 1
-    LoadingUI["5"]["FontFace"] = Font.new("rbxasset://fonts/families/Ubuntu.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
+    LoadingUI["5"]["FontFace"] = Font.new("rbxasset://fonts/families/Ubuntu.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
     LoadingUI["5"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
-    LoadingUI["5"]["Size"] = UDim2.new(1, 0, 0, 60)
-    LoadingUI["5"]["Position"] = UDim2.new(0, 0, 0, 35)
+    LoadingUI["5"]["Size"] = UDim2.new(1, 0, 0, 40)
+    LoadingUI["5"]["Position"] = UDim2.new(0, 0, 0, 25)
     LoadingUI["5"]["Text"] = "AntiLua"
     LoadingUI["5"]["Name"] = "Logo"
     
     LoadingUI["5b"] = Instance.new("TextLabel", LoadingUI["3"])
     LoadingUI["5b"]["BorderSizePixel"] = 0
-    LoadingUI["5b"]["TextSize"] = 14
+    LoadingUI["5b"]["TextSize"] = 11
     LoadingUI["5b"]["BackgroundTransparency"] = 1
-    LoadingUI["5b"]["FontFace"] = Font.new("rbxasset://fonts/families/Ubuntu.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-    LoadingUI["5b"]["TextColor3"] = Color3.fromRGB(86, 255, 128)
-    LoadingUI["5b"]["Size"] = UDim2.new(1, 0, 0, 20)
-    LoadingUI["5b"]["Position"] = UDim2.new(0, 0, 0, 90)
-    LoadingUI["5b"]["Text"] = "Script Loader"
+    LoadingUI["5b"]["FontFace"] = Font.new("rbxasset://fonts/families/Ubuntu.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
+    LoadingUI["5b"]["TextColor3"] = Color3.fromRGB(171, 60, 255)
+    LoadingUI["5b"]["Size"] = UDim2.new(1, 0, 0, 16)
+    LoadingUI["5b"]["Position"] = UDim2.new(0, 0, 0, 62)
+    LoadingUI["5b"]["Text"] = "SCRIPT LOADER"
     LoadingUI["5b"]["Name"] = "Subtitle"
     
     LoadingUI["6"] = Instance.new("Frame", LoadingUI["3"])
     LoadingUI["6"]["BorderSizePixel"] = 0
-    LoadingUI["6"]["BackgroundColor3"] = Color3.fromRGB(30, 30, 35)
+    LoadingUI["6"]["BackgroundColor3"] = Color3.fromRGB(28, 28, 34)
     LoadingUI["6"]["AnchorPoint"] = Vector2.new(0.5, 0)
-    LoadingUI["6"]["Size"] = UDim2.new(0, 340, 0, 4)
-    LoadingUI["6"]["Position"] = UDim2.new(0.5, 0, 0.54, 0)
+    LoadingUI["6"]["Size"] = UDim2.new(0, 300, 0, 3)
+    LoadingUI["6"]["Position"] = UDim2.new(0.5, 0, 0.55, 0)
     LoadingUI["6"]["Name"] = "ProgressBG"
     LoadingUI["6"]["ClipsDescendants"] = true
     
@@ -218,37 +223,44 @@ run(function()
     
     LoadingUI["8"] = Instance.new("Frame", LoadingUI["6"])
     LoadingUI["8"]["BorderSizePixel"] = 0
-    LoadingUI["8"]["BackgroundColor3"] = Color3.fromRGB(86, 255, 128)
-    LoadingUI["8"]["Size"] = UDim2.new(0.3, 0, 1, 0)
-    LoadingUI["8"]["Position"] = UDim2.new(-0.3, 0, 0, 0)
+    LoadingUI["8"]["BackgroundColor3"] = Color3.fromRGB(171, 60, 255)
+    LoadingUI["8"]["Size"] = UDim2.new(0.25, 0, 1, 0)
+    LoadingUI["8"]["Position"] = UDim2.new(-0.25, 0, 0, 0)
     LoadingUI["8"]["Name"] = "ProgressBar"
     
     LoadingUI["9"] = Instance.new("UICorner", LoadingUI["8"])
     LoadingUI["9"]["CornerRadius"] = UDim.new(1, 0)
     
+    LoadingUI["gradient"] = Instance.new("UIGradient", LoadingUI["8"])
+    LoadingUI["gradient"]["Color"] = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(171, 60, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 80, 255))
+    }
+    LoadingUI["gradient"]["Rotation"] = 90
+    
     LoadingUI["a"] = Instance.new("TextLabel", LoadingUI["3"])
     LoadingUI["a"]["BorderSizePixel"] = 0
-    LoadingUI["a"]["TextSize"] = 15
+    LoadingUI["a"]["TextSize"] = 13
     LoadingUI["a"]["BackgroundTransparency"] = 1
     LoadingUI["a"]["FontFace"] = Font.new("rbxasset://fonts/families/Ubuntu.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-    LoadingUI["a"]["TextColor3"] = Color3.fromRGB(180, 180, 185)
+    LoadingUI["a"]["TextColor3"] = Color3.fromRGB(160, 160, 170)
     LoadingUI["a"]["AnchorPoint"] = Vector2.new(0.5, 0)
-    LoadingUI["a"]["Size"] = UDim2.new(1, -40, 0, 25)
-    LoadingUI["a"]["Position"] = UDim2.new(0.5, 0, 0.64, 0)
+    LoadingUI["a"]["Size"] = UDim2.new(1, -40, 0, 20)
+    LoadingUI["a"]["Position"] = UDim2.new(0.5, 0, 0.68, 0)
     LoadingUI["a"]["Text"] = "Loading Software..."
     LoadingUI["a"]["Name"] = "Status"
     
     LoadingUI["b"] = Instance.new("TextLabel", LoadingUI["3"])
     LoadingUI["b"]["BorderSizePixel"] = 0
-    LoadingUI["b"]["TextSize"] = 12
+    LoadingUI["b"]["TextSize"] = 10
     LoadingUI["b"]["BackgroundTransparency"] = 1
     LoadingUI["b"]["FontFace"] = Font.new("rbxasset://fonts/families/Ubuntu.json", Enum.FontWeight.Light, Enum.FontStyle.Normal)
-    LoadingUI["b"]["TextColor3"] = Color3.fromRGB(110, 110, 120)
+    LoadingUI["b"]["TextColor3"] = Color3.fromRGB(90, 90, 100)
     LoadingUI["b"]["RichText"] = true
     LoadingUI["b"]["AnchorPoint"] = Vector2.new(0.5, 1)
-    LoadingUI["b"]["Size"] = UDim2.new(1, 0, 0, 20)
-    LoadingUI["b"]["Position"] = UDim2.new(0.5, 0, 0.94, 0)
-    LoadingUI["b"]["Text"] = '<font color="rgb(130,130,140)">Powered by</font> <font color="rgb(86,255,128)">.antilua.</font> <font color="rgb(90,90,100)">v1.3.5</font>'
+    LoadingUI["b"]["Size"] = UDim2.new(1, 0, 0, 18)
+    LoadingUI["b"]["Position"] = UDim2.new(0.5, 0, 0.95, 0)
+    LoadingUI["b"]["Text"] = '<font color="rgb(100,100,110)">Powered by</font> <font color="rgb(171, 60, 255)">.antilua.</font> <font color="rgb(75,75,85)">v1.3.5</font>'
     LoadingUI["b"]["Name"] = "PowerBy"
     
     LoadingUI["c"] = Instance.new("ImageLabel", LoadingUI["3"])
@@ -256,14 +268,26 @@ run(function()
     LoadingUI["c"]["BorderSizePixel"] = 0
     LoadingUI["c"]["ScaleType"] = Enum.ScaleType.Slice
     LoadingUI["c"]["SliceCenter"] = Rect.new(49, 49, 450, 450)
-    LoadingUI["c"]["ImageTransparency"] = 0.5
+    LoadingUI["c"]["ImageTransparency"] = 0.6
     LoadingUI["c"]["ImageColor3"] = Color3.fromRGB(0, 0, 0)
     LoadingUI["c"]["AnchorPoint"] = Vector2.new(0.5, 0.5)
     LoadingUI["c"]["Image"] = "rbxassetid://6014261993"
-    LoadingUI["c"]["Size"] = UDim2.new(1, 47, 1, 47)
+    LoadingUI["c"]["Size"] = UDim2.new(1, 40, 1, 40)
     LoadingUI["c"]["Position"] = UDim2.new(0.5, 0, 0.5, 0)
     LoadingUI["c"]["BackgroundTransparency"] = 1
     LoadingUI["c"]["Name"] = "Shadow"
+    
+    LoadingUI["topGlow"] = Instance.new("Frame", LoadingUI["3"])
+    LoadingUI["topGlow"]["BorderSizePixel"] = 0
+    LoadingUI["topGlow"]["BackgroundColor3"] = Color3.fromRGB(171, 60, 255)
+    LoadingUI["topGlow"]["BackgroundTransparency"] = 0.92
+    LoadingUI["topGlow"]["Size"] = UDim2.new(1, 0, 0, 1)
+    LoadingUI["topGlow"]["Position"] = UDim2.new(0, 0, 0, 0)
+    LoadingUI["topGlow"]["Name"] = "TopGlow"
+    LoadingUI["topGlow"]["ZIndex"] = 2
+    
+    local topGlowCorner = Instance.new("UICorner", LoadingUI["topGlow"])
+    topGlowCorner["CornerRadius"] = UDim.new(0, 16)
     
     function LoadingUI.startLoadingAnimation()
         if isAnimating then return end
@@ -272,16 +296,16 @@ run(function()
             while isAnimating do
                 local moveTween = TweenService:Create(
                     LoadingUI["8"],
-                    TweenInfo.new(1.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut),
+                    TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
                     {Position = UDim2.new(1, 0, 0, 0)}
                 )
                 moveTween:Play()
                 moveTween.Completed:Wait()
                 
                 if not isAnimating then break end
-                LoadingUI["8"].Position = UDim2.new(-0.3, 0, 0, 0)
+                LoadingUI["8"].Position = UDim2.new(-0.25, 0, 0, 0)
                 
-                _task.wait(0.1)
+                _task.wait(0.15)
             end
         end)
     end
@@ -289,39 +313,51 @@ run(function()
     function LoadingUI.stopLoadingAnimation()
         if not isAnimating then return end
         isAnimating = false
-        LoadingUI["8"].Size = UDim2.new(1, 0, 1, 0)
-        LoadingUI["8"].Position = UDim2.new(0, 0, 0, 0)
+        
+        local completeTween = TweenService:Create(
+            LoadingUI["8"],
+            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0)}
+        )
+        completeTween:Play()
+        completeTween.Completed:Wait()
         
         _task.wait(0.3)
         
         local fadeOut = TweenService:Create(
             LoadingUI["3"],
-            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundTransparency = 1}
         )
         
         local fadeOutBG = TweenService:Create(
             LoadingUI["2"],
-            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundTransparency = 1}
+        )
+        
+        local fadeOutBorder = TweenService:Create(
+            LoadingUI["border"],
+            TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Transparency = 1}
         )
         
         for _, v in pairs(LoadingUI["3"]:GetDescendants()) do
             if v:IsA("TextLabel") then
                 _task.spawn(function()
-                    TweenService:Create(v, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    TweenService:Create(v, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                         TextTransparency = 1
                     }):Play()
                 end)
             elseif v:IsA("ImageLabel") then
                 _task.spawn(function()
-                    TweenService:Create(v, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    TweenService:Create(v, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                         ImageTransparency = 1
                     }):Play()
                 end)
             elseif v:IsA("Frame") and v.Name ~= "MainContainer" then
                 _task.spawn(function()
-                    TweenService:Create(v, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    TweenService:Create(v, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                         BackgroundTransparency = 1
                     }):Play()
                 end)
@@ -330,6 +366,7 @@ run(function()
         
         fadeOut:Play()
         fadeOutBG:Play()
+        fadeOutBorder:Play()
         fadeOut.Completed:Wait()
         
         LoadingUI["1"]:Destroy()
@@ -349,7 +386,7 @@ run(function()
 	or crack the script for any reason is not allowed.
 
 	Copyright ⓒ 2026 AntiLua Hub - Script. All Rights Reserved.
-]], Color3.fromHex("#10FFF8"), {showTimestamp = true})
+]], Color3.fromHex("#AB3CFF"), {showTimestamp = true})
     if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Anti-AFK is being applied..." end
 	local GC = getconnections
     if GC then
