@@ -407,6 +407,9 @@ run(function()
     _task.spawn(function()
         if game:HttpGetAsync("https://raw.githubusercontent.com/Ukrubojvo/AntiLua/run/games/"..game.PlaceId) ~= "" then
             _xpcall(function()
+                if isfile("AntiLua/autoexec.bin") then
+                    delfile("AntiLua/autoexec.bin")
+                end
 				local GitRequests = loadstring(game:HttpGet("https://raw.githubusercontent.com/itchino/Roblox-GitRequests/refs/heads/main/GitRequests.lua"))()
                 local Repo = GitRequests.Repo("Ukrubojvo", "AntiLua")
 				local content = Repo:getFileContent("games/"..game.PlaceId, "run")
