@@ -492,19 +492,5 @@ run(function()
             icon = "rbxassetid://4485364377"
         })
     end)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Loading Services..." end
-	_task.wait(_math.random() * 0.4 + 0.3)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Loading Variables..." end
-	_task.wait(_math.random() * 0.4 + 0.8)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Loading Tables..." end
-	_task.wait(_math.random() * 0.3 + 0.3)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Loading Functions..." end
-	_task.wait(_math.random() * 0.5 + 1)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Loading User Interface..." end
-	_task.wait(_math.random() * 0.5 + 0.5)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Loading Assets..." end
-	_task.wait(_math.random() * 0.4 + 0.4)
-	if LoadingUI["a"] then LoadingUI["a"]["Text"] = "Finalizing Setup..." end
-	_task.wait(_math.random() * 0.6 + 0.5)
     if LoadingUI.stopLoadingAnimation then LoadingUI.stopLoadingAnimation() end
 end)
