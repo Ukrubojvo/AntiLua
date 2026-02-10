@@ -1,5 +1,5 @@
 # Discord Server
-https://discord.gg/fuRNAjWv2u
+https://discord.gg/qpscripts
 
 ## Code
 ```lua
