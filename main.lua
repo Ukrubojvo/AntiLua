@@ -3,9 +3,6 @@ local _xpcall, _pcall, _task, _math = xpcall, pcall, task, math
 if not isfolder("AntiLua") then
     makefolder("AntiLua")
 end
-if shared.AntiLuaLoading then
-    return "Already Loaded"
-end
 if shared.AntiLuaLoader then
     return "already"
 end
@@ -496,4 +493,5 @@ run(function()
         })
     end)
     if LoadingUI.stopLoadingAnimation then LoadingUI.stopLoadingAnimation() end
+	shared.AntiLuaLoader = false
 end)
