@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://antilua-api.vercel.app/"))()
+loadstring(game:HttpGet("https://api.antilua.xyz/"))()
