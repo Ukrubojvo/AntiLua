@@ -210,7 +210,7 @@ download_btn.MouseButton1Click:Connect(function()
 
     local success, err = pcall(function()
         local content = game:HttpGet(url)
-        local path = 'milinium/configs/' .. game.PlaceId .. '/'
+        local path = 'milenium/configs/' .. game.PlaceId .. '/'
 
         if not isfolder(path) then
             makefolder(path)
